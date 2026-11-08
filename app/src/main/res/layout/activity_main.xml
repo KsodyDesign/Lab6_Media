@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Лабораторная работа №6"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="@color/purple_700"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Воспроизведение локальных медиафайлов"
+        android:textSize="15sp"
+        android:textColor="#666666"
+        android:layout_marginBottom="36dp" />
+
+    <!-- Кнопка перехода в аудиоплеер -->
+    <Button
+        android:id="@+id/btnOpenAudio"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="🎵 Аудиоплеер (MediaPlayer)"
+        android:textSize="16sp"
+        android:backgroundTint="@color/teal_700"
+        android:textColor="@color/white"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Кнопка перехода в видеоплеер -->
+    <Button
+        android:id="@+id/btnOpenVideo"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:text="🎬 Видеоплеер (VideoView)"
+        android:textSize="16sp"
+        android:backgroundTint="@color/blue"
+        android:textColor="@color/white" />
+
+</LinearLayout>
