@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Lab6_Media</string>
+    <string name="title_media_hub">Медиаплеер Android</string>
+    <string name="subtitle_hub">Воспроизведение локальных аудио- и видеофайлов</string>
+    <string name="btn_open_audio">🎵 Открыть Аудиоплеер (MediaPlayer)</string>
+    <string name="btn_open_video">🎬 Открыть Видеоплеер (VideoView)</string>
+    <string name="title_audio">Аудиоплеер (MediaPlayer)</string>
+    <string name="title_video">Видеоплеер (VideoView)</string>
+    <string name="label_volume">Громкость медиапотока (STREAM_MUSIC):</string>
+    <string name="btn_play">Воспроизведение</string>
+    <string name="btn_pause">Пауза</string>
+    <string name="btn_stop">Остановить</string>
+    <string name="btn_back">Вернуться в меню</string>
+</resources>
