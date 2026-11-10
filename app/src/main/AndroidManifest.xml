@@ -23,7 +23,6 @@
         <activity
             android:name=".VideoActivity"
             android:exported="false"
-            android:configChanges="orientation|screenSize"
             android:label="Видеоплеер" />
     </application>
 

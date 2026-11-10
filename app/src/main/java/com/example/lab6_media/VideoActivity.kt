@@ -7,65 +7,99 @@ import android.widget.Button
 import android.widget.MediaController
 import android.widget.ProgressBar
 import android.widget.VideoView
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.snackbar.Snackbar
 
-class VideoActivity : AppCompatActivity() {
-
+class VideoActivity : BaseActivity() {
     private lateinit var videoView: VideoView
     private lateinit var progressBar: ProgressBar
-    private var isPrepared = false
+    private var prepared = false
+    private var position = 0
+    private var resumePlayback = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_video)
-
         videoView = findViewById(R.id.videoPlayer)
         progressBar = findViewById(R.id.progressBar)
-        val btnPlay = findViewById<Button>(R.id.btnPlayVideo)
-        val btnBack = findViewById<Button>(R.id.btnBack)
-
-        val uri = Uri.parse("android.resource://$packageName/${R.raw.sample_video}")
-        videoView.setVideoURI(uri)
-
-        // Стандартный контроллер управления видео
+        position = savedInstanceState?.getInt("position") ?: 0
+        resumePlayback = savedInstanceState?.getBoolean("playing") ?: false
         val controller = MediaController(this)
         controller.setAnchorView(videoView)
         videoView.setMediaController(controller)
-
-        videoView.setOnPreparedListener {
-            isPrepared = true
+        videoView.setOnPreparedListener { player ->
+            prepared = true
             progressBar.visibility = View.GONE
+            if (position > 0) {
+                player.setOnSeekCompleteListener {
+                    player.setOnSeekCompleteListener(null)
+                    if (resumePlayback) videoView.start()
+                }
+                videoView.seekTo(position)
+            } else if (resumePlayback) videoView.start()
         }
-
-        videoView.setOnErrorListener { _, what, extra ->
+        videoView.setOnCompletionListener {
+            position = 0
+            resumePlayback = false
+        }
+        videoView.setOnErrorListener { _, _, _ ->
+            prepared = false
+            resumePlayback = false
             progressBar.visibility = View.GONE
-            Snackbar.make(videoView, "Ошибка воспроизведения видео: $what, $extra", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(videoView, "Не удалось открыть видеофайл. Нажмите Play для повтора.", Snackbar.LENGTH_LONG).show()
             true
         }
-
-        btnPlay.setOnClickListener {
-            if (!isPrepared) {
-                Snackbar.make(videoView, "Файл ещё загружается...", Snackbar.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            videoView.start()
+        findViewById<Button>(R.id.btnPlayVideo).setOnClickListener {
+            resumePlayback = true
+            if (prepared) videoView.start() else openVideo()
         }
+        findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
+    }
 
-        btnBack.setOnClickListener {
-            finish()
+    private fun openVideo() {
+        prepared = false
+        progressBar.visibility = View.VISIBLE
+        try {
+            videoView.setVideoURI(Uri.parse("android.resource://$packageName/${R.raw.sample_video}"))
+        } catch (error: Exception) {
+            resumePlayback = false
+            progressBar.visibility = View.GONE
+            Snackbar.make(videoView, "Не удалось открыть видеофайл", Snackbar.LENGTH_LONG).show()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        openVideo()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (prepared && resumePlayback) videoView.start()
     }
 
     override fun onPause() {
-        super.onPause()
-        if (videoView.isPlaying) {
+        if (prepared) {
+            position = videoView.currentPosition
+            resumePlayback = videoView.isPlaying
             videoView.pause()
         }
+        super.onPause()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putInt("position", if (prepared) videoView.currentPosition else position)
+        outState.putBoolean("playing", videoView.isPlaying || resumePlayback)
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onStop() {
+        videoView.stopPlayback()
+        prepared = false
+        super.onStop()
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         videoView.stopPlayback()
+        super.onDestroy()
     }
 }
