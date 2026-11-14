@@ -34,7 +34,11 @@ class VideoActivity : BaseActivity() {
                     player.setOnSeekCompleteListener(null)
                     if (resumePlayback) videoView.start()
                 }
-                videoView.seekTo(position)
+                if (android.os.Build.VERSION.SDK_INT >= 26) {
+                    player.seekTo(position.toLong(), android.media.MediaPlayer.SEEK_CLOSEST)
+                } else {
+                    videoView.seekTo(position)
+                }
             } else if (resumePlayback) videoView.start()
         }
         videoView.setOnCompletionListener {
